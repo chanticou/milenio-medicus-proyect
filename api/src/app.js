@@ -28,15 +28,17 @@ app.use(morgan("dev"));
 
 //routes
 app.use(routesUsers);
-const arr = ["Hola, ¿en que puedo ayudarte?"];
+
 //socket-io
 io.on("connection", (socket) => {
-  // console.log("a user connected with id", socket.id);
-  //Lo traigo del front al back
+  //Recibo del front el input
   socket.on("messageFromFront", (message) => {
-    console.log(message);
-    socket.broadcast.emit("messageFromBack", message);
+    socket.broadcast.emit("messageFromBack", {
+      from: socket.id,
+      body: message,
+    });
     let response;
+
     if (message === "hola") {
       response = "Hola, ¿en qué puedo ayudarte?";
     } else if (message === "ayuda") {
@@ -44,7 +46,7 @@ io.on("connection", (socket) => {
     } else {
       response = "Lo siento, no entiendo lo que quieres decir.";
     }
-    socket.emit("messageFromBack", response);
+    socket.emit("messageFromBack", { from: "backend", body: response });
   });
   //lo mando del back al front
   // socket.broadcast.emit("messageFromBack", message);
