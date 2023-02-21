@@ -32,6 +32,7 @@ app.use(routesUsers);
 //socket-io
 io.on("connection", (socket) => {
   let response = {
+    from: "Milenio",
     message:
       "¡Hola bienvenid@! ¿En qué puedo ayudarte?, marca la option deseada:",
     options: [
@@ -40,69 +41,65 @@ io.on("connection", (socket) => {
       "Opcion 3: Recetas online",
     ],
   };
-  let response2 = {
-    from: "User",
-    message: { messages: "¡Hola de nuevo! Por favor marca la opcion deseada:" },
-    options: [
-      "Opcion 1:Consultorio online",
-      "Opcion 2: Sintomas covid",
-      "Opcion 3: Recetas online",
-    ],
-  };
-  socket.on("messageFromFront", (message) => {
+
+  //APENAS EMPEIZA LA PAGINA, ESCUCHO EL MENSAJE DEL USUARIO, QUE VA A SER EN EL SUEEFFECT INICIO Y DEVUELVO LA SOPTIONES PREDETEMRINADAS.
+  socket.on("firstMessageOptions", (message) => {
     if (/inicio+/i.test(message)) {
-      response;
+      socket.emit("firstMessageOptionsBackend", response);
     }
 
-    socket.on("userMessage", (message) => {
-      if (/hola+/i.test(message)) {
-        socket.emit("responsemachine", response2);
-      }
-    });
-    socket.emit("messageFromBack", {
-      from: "Milenio",
-      message: response,
-      options: [""],
-    });
-
-    socket.on("buttonMessage", (message) => {
-      console.log(message);
+    //ELEGIR LA OPCION DESEADS POR EL CLIENTE
+    socket.on("selectOptionFromUser", (message) => {
       if (message == "Opcion 1:Consultorio online") {
-        socket.emit("responseButtonsMessage", {
+        socket.emit("responseOptionFromServer", {
           from: "Milenio",
-          message: {
-            message:
-              "A continuacion te pasamos el link para que pidas turno!   'LINK'. !Muchas gracias!",
-          },
-          options: [""],
+          message:
+            "A continuacion te pasamos el link para que pidas turno!   'LINK'. !Muchas gracias!",
+          options: [],
         });
       }
       if (message == "Opcion 2: Sintomas covid") {
-        socket.emit("responseButtonsMessage", {
+        socket.emit("responseOptionFromServer", {
           from: "Milenio",
-          message: {
-            message:
-              "Por favor, ingresa en el siguiente LINK y podras acceder a la brevedad a un medico online.",
-          },
-          options: [""],
+          message:
+            "Por favor, ingresa en el siguiente LINK y podras acceder a la brevedad a un medico online.",
+          options: [],
         });
       }
       if (message == "Opcion 3: Recetas online") {
-        socket.emit("responseButtonsMessage", {
+        socket.emit("responseOptionFromServer", {
           from: "Milenio",
-          message: {
-            message:
-              "Por favor, ingresa en el siguiente LINK, ingresa tus sintomas y te redirigiremos..",
-          },
-          options: [""],
+          message:
+            "Por favor, ingresa en el siguiente LINK, ingresa tus sintomas y te redirigiremos..",
+          options: [],
         });
       } else {
-        socket.emit("responseButtonsMessage", {
+        socket.emit("responseOptionFromServer", {
           from: "Milenio",
-          message: { message: "Por favor, vuelve a intentarlo" },
-          options: [""],
+          message: "Por favor, vuelve a intentarlo",
+          options: [],
         });
       }
+    });
+    //
+
+    //AHORA SI EL USUARIO INTENTA OCMUNICARSE CON EL SERVIDOR, QUE RESPONDEMOS?
+    let response2 = {
+      from: "Milenio",
+      message: "¡Hola de nuevo! Por favor marca la opcion deseada:",
+      options: [
+        "Opcion 1:Consultorio online",
+        "Opcion 2: Sintomas covid",
+        "Opcion 3: Recetas online",
+      ],
+    };
+    socket.on("userMessage", (message) => {
+      console.log(message);
+      socket.emit("prueba", message);
+    });
+    socket.on("userMessage", (message) => {
+      console.log(message);
+      socket.emit("responseUserMessage", response2);
     });
 
     //llega el mensaje del fornt y lo devuelvo con el id del user.
