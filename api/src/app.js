@@ -31,25 +31,88 @@ app.use(routesUsers);
 
 //socket-io
 io.on("connection", (socket) => {
-  //Recibo del front el input
+  let response = {
+    message:
+      "¡Hola bienvenid@! ¿En qué puedo ayudarte?, marca la option deseada:",
+    options: [
+      "Opcion 1:Consultorio online",
+      "Opcion 2: Sintomas covid",
+      "Opcion 3: Recetas online",
+    ],
+  };
+  let response2 = {
+    from: "User",
+    message: { messages: "¡Hola de nuevo! Por favor marca la opcion deseada:" },
+    options: [
+      "Opcion 1:Consultorio online",
+      "Opcion 2: Sintomas covid",
+      "Opcion 3: Recetas online",
+    ],
+  };
   socket.on("messageFromFront", (message) => {
-    socket.broadcast.emit("messageFromBack", {
-      from: socket.id,
-      body: message,
-    });
-    let response;
-
-    if (message === "hola") {
-      response = "Hola, ¿en qué puedo ayudarte?";
-    } else if (message === "ayuda") {
-      response = "¿Necesitas ayuda? Por favor, dime en qué puedo ayudarte.";
-    } else {
-      response = "Lo siento, no entiendo lo que quieres decir.";
+    if (/inicio+/i.test(message)) {
+      response;
     }
-    socket.emit("messageFromBack", { from: "backend", body: response });
+
+    socket.on("userMessage", (message) => {
+      if (/hola+/i.test(message)) {
+        socket.emit("responsemachine", response2);
+      }
+    });
+    socket.emit("messageFromBack", {
+      from: "Milenio",
+      message: response,
+      options: [""],
+    });
+
+    socket.on("buttonMessage", (message) => {
+      console.log(message);
+      if (message == "Opcion 1:Consultorio online") {
+        socket.emit("responseButtonsMessage", {
+          from: "Milenio",
+          message: {
+            message:
+              "A continuacion te pasamos el link para que pidas turno!   'LINK'. !Muchas gracias!",
+          },
+          options: [""],
+        });
+      }
+      if (message == "Opcion 2: Sintomas covid") {
+        socket.emit("responseButtonsMessage", {
+          from: "Milenio",
+          message: {
+            message:
+              "Por favor, ingresa en el siguiente LINK y podras acceder a la brevedad a un medico online.",
+          },
+          options: [""],
+        });
+      }
+      if (message == "Opcion 3: Recetas online") {
+        socket.emit("responseButtonsMessage", {
+          from: "Milenio",
+          message: {
+            message:
+              "Por favor, ingresa en el siguiente LINK, ingresa tus sintomas y te redirigiremos..",
+          },
+          options: [""],
+        });
+      } else {
+        socket.emit("responseButtonsMessage", {
+          from: "Milenio",
+          message: { message: "Por favor, vuelve a intentarlo" },
+          options: [""],
+        });
+      }
+    });
+
+    //llega el mensaje del fornt y lo devuelvo con el id del user.
+    // socket.emit("messageFromBack", {
+    //   from: socket.id,
+    //   body: message,
+    //   options: "",
+    // });
   });
   //lo mando del back al front
-  // socket.broadcast.emit("messageFromBack", message);
 });
 
 server.listen(PORT, () => console.log("Listening on port ", PORT));
