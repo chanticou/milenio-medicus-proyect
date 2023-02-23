@@ -32,9 +32,18 @@ app.use(routesUsers);
 //socket-io
 io.on("connection", (socket) => {
   let response = {
-    from: "Milenio",
+    from: "Uma",
     message:
-      "¡Hola bienvenid@! ¿En qué puedo ayudarte?, marca la option deseada:",
+      "¡Hola bienvenid@! ¿En qué puedo ayudarte?, haz click en la option deseada:",
+    options: [
+      "Opcion 1:Consultorio online",
+      "Opcion 2: Sintomas covid",
+      "Opcion 3: Recetas online",
+    ],
+  };
+  let response2 = {
+    from: "Uma",
+    message: "¡Hola de nuevo! Por haz click en la option deseada:",
     options: [
       "Opcion 1:Consultorio online",
       "Opcion 2: Sintomas covid",
@@ -52,7 +61,7 @@ io.on("connection", (socket) => {
     socket.on("selectOptionFromUser", (message) => {
       if (message == "Opcion 1:Consultorio online") {
         socket.emit("responseOptionFromServer", {
-          from: "Milenio",
+          from: "Uma",
           message:
             "A continuacion te pasamos el link para que pidas turno!   'LINK'. !Muchas gracias!",
           options: [],
@@ -60,7 +69,7 @@ io.on("connection", (socket) => {
       }
       if (message == "Opcion 2: Sintomas covid") {
         socket.emit("responseOptionFromServer", {
-          from: "Milenio",
+          from: "Uma",
           message:
             "Por favor, ingresa en el siguiente LINK y podras acceder a la brevedad a un medico online.",
           options: [],
@@ -68,14 +77,14 @@ io.on("connection", (socket) => {
       }
       if (message == "Opcion 3: Recetas online") {
         socket.emit("responseOptionFromServer", {
-          from: "Milenio",
+          from: "Uma",
           message:
             "Por favor, ingresa en el siguiente LINK, ingresa tus sintomas y te redirigiremos..",
           options: [],
         });
       } else {
         socket.emit("responseOptionFromServer", {
-          from: "Milenio",
+          from: "Uma",
           message: "Por favor, vuelve a intentarlo",
           options: [],
         });
@@ -84,50 +93,13 @@ io.on("connection", (socket) => {
     //
 
     //AHORA SI EL USUARIO INTENTA OCMUNICARSE CON EL SERVIDOR, QUE RESPONDEMOS?
-    let response2 = {
-      from: "Milenio",
-      message: "¡Hola de nuevo! Por favor marca la opcion deseada:",
-      options: [
-        "Opcion 1:Consultorio online",
-        "Opcion 2: Sintomas covid",
-        "Opcion 3: Recetas online",
-      ],
-    };
+
     socket.on("userMessage", (message) => {
       console.log(message);
-      socket.emit("prueba", message);
-    });
-    socket.on("userMessage", (message) => {
-      console.log(message);
+
       socket.emit("responseUserMessage", response2);
     });
-
-    //llega el mensaje del fornt y lo devuelvo con el id del user.
-    // socket.emit("messageFromBack", {
-    //   from: socket.id,
-    //   body: message,
-    //   options: "",
-    // });
   });
-  //lo mando del back al front
 });
 
 server.listen(PORT, () => console.log("Listening on port ", PORT));
-
-// io.on("connection", (socket) => {
-//   console.log("New client connected");
-
-//   socket.on("user-message", (message) => {
-//     console.log("User message:", message);
-//     // Aquí podrías procesar la pregunta y obtener una respuesta
-//     // Luego, envías la respuesta de vuelta al cliente
-//     socket.emit("bot-message", "Esta es la respuesta a tu pregunta.");
-//   });
-//   socket.on("disconnect", () => {
-//     console.log("Client disconnected");
-//   });
-// });
-
-// server.on("error", (error) => {
-//   console.log("Socket.IO server error:", error);
-// });
